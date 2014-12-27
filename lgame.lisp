@@ -157,6 +157,13 @@ system currently being visited."
    "Called when a cell is discarded, for example when its entity
 is removed from the system. By default this does nothing.")
 
+(defmacro define-entity-cell (class-name superclasses &body body)
+  "Use exactly like 'defclass.' This is the same as defining a class
+normally, but also does some necessary bookkeeping for a cell class (add
+entity-cell as a base class)."
+  `(defclass ,class-name (,@superclasses entity-cell)
+     ,@body))
+
 
 (defclass =entity-system= (=system=)
   ((cell-class
@@ -167,6 +174,17 @@ table. Must be a subclass of entity-cell.")
     :initform (make-hash-table :test 'equal)
     :accessor table
     :documentation "Entity -> cell hash table.")))
+
+(defmacro define-entity-system (class-name superclasses
+                                cell-class &optional slots
+                                &body rest)
+  "Like 'define-system,' except you define the cell class inline and it adds
+=entity-system= as a base class."
+  (let ((cell-class-var (gensym)))
+    `(let ((,cell-class-var ,cell-class))
+       (define-system ,class-name (,@superclasses =entity-system=)
+         (,@slots (cell-class :initform ,cell-class-var))
+         ,@rest))))
 
 (defgeneric add-to-system (system entity &rest args)
   (:documentation "Add entity to an entity-system. By default simply creates
