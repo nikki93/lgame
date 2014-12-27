@@ -93,7 +93,9 @@ start, define a special variable for easy access)."
 
 
 (defun register-system-class (class)
-  (pushnew class *system-classes*))
+  (pushnew class *system-classes*)
+  (unless (zerop (hash-table-size *systems*))
+    (start-system class)))
 
 (defun clear-system-classes ()
   (setf *system-classes* nil))
