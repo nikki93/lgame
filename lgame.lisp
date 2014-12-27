@@ -165,7 +165,8 @@ currently being visited."
 
 (defmethod deinitialize-instance ((cell entity-cell))
   "Called when a cell is discarded, for example when its entity
-is removed from the system. By default this does nothing.")
+is removed from the system. By default this does nothing."
+  nil)
 
 (defmacro define-entity-cell (class-name superclasses &body body)
   "Use exactly like 'defclass.' This is the same as defining a class normally,
