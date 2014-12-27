@@ -83,10 +83,10 @@ associated with this instance."
   (setf (symbol-value (type-of system)) nil))
 
 (defmacro define-system (class-name superclasses &body body)
-  "Use exactly like 'defclass.' This is the same as defining a class
-normally, but also does some necessary bookkeeping for a system class (add
-=system= as a superclass, register the class as a system class to load on
-start, define a special variable for easy access)."
+  "Use exactly like 'defclass.' This is the same as defining a class normally,
+but also does some necessary bookkeeping for a system class (add =system= as a
+superclass, register the class as a system class to load on start, define a
+special variable for easy access)."
   `(progn
      (defclass ,class-name (,@superclasses =system=)
        ,@body)
@@ -142,8 +142,8 @@ start, define a special variable for easy access)."
 
 
 (defmacro do-systems ((var) &body body)
-  "(do-systems (var) ...) iterates over systems, binding var to the
-system currently being visited."
+  "(do-systems (var) ...) iterates over systems, binding var to the system
+currently being visited."
   (let ((class-var (gensym)))
     `(maphash #'(lambda (,class-var ,var)
                   (declare (ignore ,class-var))
@@ -168,9 +168,9 @@ system currently being visited."
 is removed from the system. By default this does nothing.")
 
 (defmacro define-entity-cell (class-name superclasses &body body)
-  "Use exactly like 'defclass.' This is the same as defining a class
-normally, but also does some necessary bookkeeping for a cell class (add
-entity-cell as a base class)."
+  "Use exactly like 'defclass.' This is the same as defining a class normally,
+but also does some necessary bookkeeping for a cell class (add entity-cell as a
+base class)."
   `(defclass ,class-name (,@superclasses entity-cell)
      ,@body))
 
@@ -197,9 +197,9 @@ table. Must be a subclass of entity-cell.")
          ,@rest))))
 
 (defgeneric add-to-system (system entity &rest args)
-  (:documentation "Add entity to an entity-system. By default simply creates
-a cell giving it the initializer arguments and adds it to the table, doing
-nothing if the entity is already in the system.")
+  (:documentation "Add entity to an entity-system. By default simply creates a
+cell giving it the initializer arguments and adds it to the table, doing nothing
+if the entity is already in the system.")
   (:method ((system =entity-system=) entity &rest args)
     (with-slots (table cell-class) system
       (unless (gethash entity table)
@@ -208,9 +208,9 @@ nothing if the entity is already in the system.")
                      (list* cell-class :entity entity args)))))))
 
 (defgeneric remove-from-system (system entity)
-  (:documentation "Remove entity from an entity-system. By default removes
-the cell from the table and calls deinitialize-instance on it, doing nothing
-if the entity is not in the system.")
+  (:documentation "Remove entity from an entity-system. By default removes the
+cell from the table and calls deinitialize-instance on it, doing nothing if the
+entity is not in the system.")
   (:method ((system =entity-system=) entity)
     (with-slots (table) system
       (let ((cell (gethash entity table)))
