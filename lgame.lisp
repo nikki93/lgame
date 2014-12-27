@@ -326,6 +326,7 @@ Returns the entity."
 (defun run-game ()
   (sdl:with-init (sdl:sdl-init-video)
     (sdl:window 640 480 :flags sdl:sdl-opengl)
+    (setf (sdl:frame-rate) 60)
     (setf cl-opengl-bindings:*gl-get-proc-address*
           #'sdl-cffi::sdl-gl-get-proc-address)
     (sdl:with-events ()
