@@ -2,24 +2,6 @@
 
 (in-package #:lgame)
 
-;;;
-;;; ideas/todo:
-;;;
-;;;    - an abstract 'system dependencies' mechanism
-;;;      - you can establish relationships of the form 'system x depends on
-;;;        y in z,' for example system gui depends on text in initialization,
-;;;        or system sprite depends on transform in entity ownership
-;;;      - you can make queries of the form "get ordered list of systems in
-;;;        z," for example, "get systems in initialization order"
-;;;      - you can ask what a system depends on in z, for example while adding
-;;;        an entity to an entity system
-;;;
-;;;    - don't use initialize-instance for logic side-effects stuff
-;;;      - might want to do memory pool stuff later
-;;;      - if you fix the above make sure to forward cell initargs and change
-;;;        the name of the deinit counterpart
-;;;
-
 
 
 ;;;
