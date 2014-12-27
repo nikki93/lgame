@@ -23,6 +23,15 @@
 
 
 ;;;
+;;; utils
+;;;
+
+(defmacro do-hash ((k v table) &body body)
+  `(maphash #'(lambda (,k ,v) ,@body) ,table))
+
+
+
+;;;
 ;;; math
 ;;;
 
@@ -234,9 +243,6 @@ For example,
 ;;;
 ;;; basic systems
 ;;;
-
-(defmacro do-hash ((k v table) &body body)
-  `(maphash #'(lambda (,k ,v) ,@body) ,table))
 
 
 ;;; events
