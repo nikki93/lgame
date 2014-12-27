@@ -302,9 +302,19 @@ Returns the entity."
   `(restart-case (progn ,@body)
      (continue () :report "Continue")))
 
-(defun update-game ()
+(let ((nframes 0) (last-fps 0))
+  (defun update-fps (period dt)
+    (incf nframes)
+    (incf last-fps dt)
+    (when (<= period last-fps)
+      (format t "~&fps: ~a~%" (/ nframes last-fps))
+      (finish-output nil)
+      (setf nframes 0 last-fps 0))))
+
+(defun update-game (dt)
   (do-systems (system)
-    (update system 0.02)))              ; TODO: use actual time
+    (update system dt))
+  (update-fps 5 dt))
 
 (defun draw-game ()
   (gl:clear :color-buffer-bit)
@@ -323,7 +333,7 @@ Returns the entity."
       (:idle ()
              (update-swank)
              (continuable
-               (update-game)
+               (update-game (coerce (sdl:dt) 'float))
                (draw-game))))))
 
 
