@@ -74,7 +74,7 @@ associated with this instance."
   "Use exactly like 'defclass.' This is the same as defining a class
 normally, but also does some necessary bookkeeping for a system class (add
 =system= as a superclass, register the class as a system class to load on
-start, define a special variable for easy access."
+start, define a special variable for easy access)."
   `(progn
      (defclass ,class-name (,@superclasses =system=)
        ,@body)
