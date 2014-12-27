@@ -61,7 +61,7 @@
   `(add-to-systems (generate-entity) ,@body))
 
 (defun destroy-entity (entity)
-  (dolist (system *systems*)             ; TODO: maintain which entity-systems
+  (do-systems (system)                   ; TODO: maintain which entity-systems
     (remove-from-system system entity))) ;       an entity is in?
 
 
