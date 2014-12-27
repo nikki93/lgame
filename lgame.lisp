@@ -78,7 +78,7 @@ start, define a special variable for easy access)."
   `(progn
      (defclass ,class-name (,@superclasses =system=)
        ,@body)
-     (eval-when (:compile-toplevel :load-toplevel :execute)
+     (eval-when (:load-toplevel :execute) ; TODO: is this right?
        (defvar ,class-name nil)
        (register-system-class ',class-name))))
 
