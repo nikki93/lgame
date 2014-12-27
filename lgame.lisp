@@ -283,21 +283,6 @@ For example,
         (gl:rect -0.5 -0.5 0.5 0.5)))))
 
 
-;;; rotator
-
-(defclass rotator (entity-cell)
-  ((rate :initform 0.02 :initarg :rate :accessor rate)))
-
-(define-system =rotator= (=entity-system=)
-  ((cell-class :initform 'rotator)))
-
-(defmethod update ((system =rotator=) dt)
-  (do-hash (entity cell (table system))
-    (declare (ignore cell))
-    (incf (prop =transform= rot entity)
-          (* dt (prop =rotator= rate entity)))))
-
-
 
 ;;;
 ;;; game
@@ -340,3 +325,51 @@ For example,
                (draw-game))))))
 
 
+
+;;;
+;;; test
+;;;
+
+;;; rotator
+
+(define-entity-system =rotator= ()
+    (define-entity-cell rotator ()
+      ((rate :initform 0.02 :initarg :rate :accessor rate))))
+
+(defmethod update ((system =rotator=) dt)
+  (do-hash (entity cell (table system))
+    (declare (ignore cell))
+    (incf (prop =transform= rot entity)
+          (* dt (prop =rotator= rate entity)))))
+
+
+;; oscillator
+
+(define-entity-system =oscillator= ()
+    (define-entity-cell oscillator ()
+      ((rate :initarg :rate :accessor rate :initform 0.5)))
+    ((time :initform 0)))
+
+(defmethod update ((system =oscillator=) dt)
+  (with-slots (time table) system
+    (incf time dt)
+    (do-hash (entity cell table)
+      (setf (vec2-y (prop =transform= pos entity))
+            (sin (* 2 PI (rate cell) time))))))
+
+;; scene
+
+(defun test ()
+  (defparameter *player*
+    (create-entity (=transform= :scale (vec2 0.25 0.25))
+                   (=sprite= :color '(1 0 0 1))
+                   (=rotator= :rate 200)))
+
+  (add-to-systems *player* (=oscillator= :rate 0.5))
+
+  (defparameter *enemy*
+    (create-entity (=transform= :pos (vec2 -0.5 0)
+                                :scale (vec2 0.25 0.25))
+                   (=sprite= :color '(0 1 0 1))
+                   (=rotator= :rate 800)
+                   (=oscillator= :rate 5000))))
