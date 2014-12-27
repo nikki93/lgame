@@ -56,12 +56,13 @@
   (incf *curr-entity*))                 ; TODO: better entity id generation
 
 (defmacro create-entity (&body body)
-  "Generate an entity and add it to systems. 'body' is like in 'add-to-systems.'"
+  "Generate an entity and add it to systems. 'body' is like in
+'add-to-systems.'"
   `(add-to-systems (generate-entity) ,@body))
 
 (defun destroy-entity (entity)
-  (dolist (system *systems*)             ; TODO: keep track of which
-    (remove-from-system system entity))) ;       entity-systems an entity is in?
+  (dolist (system *systems*)             ; TODO: maintain which entity-systems
+    (remove-from-system system entity))) ;       an entity is in?
 
 
 
@@ -163,7 +164,7 @@ system currently being visited."
     :documentation "The entity for which this cell holds data.")))
 
 (defmethod deinitialize-instance ((cell entity-cell))
-   "Called when a cell is discarded, for example when its entity
+  "Called when a cell is discarded, for example when its entity
 is removed from the system. By default this does nothing.")
 
 (defmacro define-entity-cell (class-name superclasses &body body)
@@ -221,7 +222,8 @@ if the entity is not in the system.")
   "Add an entity to multiple systems as described by 'body' of the form,
     (system1 args) (system2 args) ...
 For example,
-    (add-to-systems e (=transform= :pos (vec2 3 4)) (=enemy= :health 3))"
+    (add-to-systems e (=transform= :pos (vec2 3 4)) (=enemy= :health 3))
+Returns the entity."
   (let ((entity-var (gensym)))
     `(let ((,entity-var ,entity))
        ,@(mapcar
@@ -243,7 +245,6 @@ For example,
 ;;;
 ;;; basic systems
 ;;;
-
 
 ;;; events
 
@@ -291,19 +292,19 @@ For example,
 (defun update-swank ()
   "Handle REPL requests."
   (continuable
-   (let ((connection (or swank::*emacs-connection* (swank::default-connection))))
-     (when connection
-       (swank::handle-requests connection t)))))
+    (let ((connection (or swank::*emacs-connection*
+                          (swank::default-connection))))
+      (when connection
+        (swank::handle-requests connection t)))))
 
 (defmacro continuable (&body body)
   "Allow continuing execution from errors."
-  `(restart-case
-       (progn ,@body)
-        (continue () :report "Continue")))
+  `(restart-case (progn ,@body)
+     (continue () :report "Continue")))
 
 (defun update-game ()
   (do-systems (system)
-    (update system 0.02)))
+    (update system 0.02)))              ; TODO: use actual time
 
 (defun draw-game ()
   (gl:clear :color-buffer-bit)
@@ -315,7 +316,8 @@ For example,
 (defun run-game ()
   (sdl:with-init (sdl:sdl-init-video)
     (sdl:window 640 480 :flags sdl:sdl-opengl)
-    (setf cl-opengl-bindings:*gl-get-proc-address* #'sdl-cffi::sdl-gl-get-proc-address)
+    (setf cl-opengl-bindings:*gl-get-proc-address*
+          #'sdl-cffi::sdl-gl-get-proc-address)
     (sdl:with-events ()
       (:quit-event () t)
       (:idle ()
@@ -356,6 +358,7 @@ For example,
     (do-hash (entity cell table)
       (setf (vec2-y (prop =transform= pos entity))
             (sin (* 2 PI (rate cell) time))))))
+
 
 ;; scene
 
