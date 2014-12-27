@@ -258,25 +258,18 @@ For example,
 
 ;;; transform
 
-(defclass transform (entity-cell)
-  ((pos :initform (vec2 0 0) :initarg :pos :accessor pos
-    :documentation "Position of the entity in parent-space.")
-   (rot :initform 0 :initarg :rot :accessor rot
-    :documentation "Rotation of the entity in parent-space.")
-   (scale :initform (vec2 1 1) :initarg :scale :accessor scale
-    :documentation "Scale of the entity in parent-space.")))
-
-(define-system =transform= (=entity-system=)
-  ((cell-class :initform 'transform)))
+(define-entity-system =transform= ()
+    (define-entity-cell transform ()
+      ((pos :initform (vec2 0 0) :initarg :pos :accessor pos)
+       (rot :initform 0 :initarg :rot :accessor rot)
+       (scale :initform (vec2 1 1) :initarg :scale :accessor scale))))
 
 
 ;;; sprite
 
-(defclass sprite (entity-cell)
-  ((color :initform '(1 0 0 1) :initarg :color :accessor color)))
-
-(define-system =sprite= (=entity-system=)
-  ((cell-class :initform 'sprite)))
+(define-entity-system =sprite= ()
+    (define-entity-cell sprite ()
+      ((color :initform '(1 0 0 1) :initarg :color :accessor color))))
 
 (defmethod draw ((system =sprite=))
   (do-hash (entity cell (table system))
