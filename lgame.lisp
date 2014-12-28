@@ -272,6 +272,11 @@ Returns the entity."
 ;;; game
 ;;;
 
+(defmacro continuable (&body body)
+  "Allow continuing execution from errors."
+  `(restart-case (progn ,@body)
+     (continue () :report "Continue")))
+
 (defun update-swank ()
   "Handle REPL requests."
   (continuable
@@ -279,11 +284,6 @@ Returns the entity."
                           (swank::default-connection))))
       (when connection
         (swank::handle-requests connection t)))))
-
-(defmacro continuable (&body body)
-  "Allow continuing execution from errors."
-  `(restart-case (progn ,@body)
-     (continue () :report "Continue")))
 
 (let ((nframes 0) (last-fps 0))
   (defun update-fps (period dt)
