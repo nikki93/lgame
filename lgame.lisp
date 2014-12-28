@@ -360,7 +360,7 @@ Returns the entity."
   (defparameter *player*
     (create-entity (=transform= :scale (vec2 0.25 0.25))
                    (=sprite= :color '(1 0 0 1))
-                   (=rotator= :rate 200)))
+                   (=rotator= :rate 90)))
 
   (add-to-systems *player* (=oscillator= :rate 0.5))
 
@@ -368,5 +368,21 @@ Returns the entity."
     (create-entity (=transform= :pos (vec2 -0.5 0)
                                 :scale (vec2 0.25 0.25))
                    (=sprite= :color '(0 1 0 1))
-                   (=rotator= :rate 800)
-                   (=oscillator= :rate 5000))))
+                   (=rotator= :rate 180)
+                   (=oscillator= :rate 1))))
+
+(defun test-huge (n)
+  (labels ((symrand ()
+             (- (* 2 (random 1.0)) 1)))
+
+    (defparameter *boxes* ())
+    (dotimes (i n)
+      (push
+       (create-entity (=transform= :scale (vec2 0.1 0.1)
+                                   :pos (vec2 (symrand) (symrand)))
+                      (=sprite= :color `(,(symrand) ,(symrand) ,(symrand) 1))
+                      (=rotator= :rate (* 180 (symrand)))
+                      (=oscillator= :rate (symrand)))
+       *boxes*))))
+
+
