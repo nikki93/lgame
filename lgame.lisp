@@ -233,7 +233,8 @@ Returns the entity."
 
 (defgeneric update (system dt)
   (:documentation "Step a system forward by dt.")
-  (:method ((system =system=) dt)))
+  (:method ((system =system=) dt)
+    (declare (ignore dt))))
 
 (defgeneric draw (system)
   (:documentation "Draw a system to the screen.")
