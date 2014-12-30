@@ -282,11 +282,16 @@ Returns the entity."
       (finish-output nil)
       (setf nframes 0 last-fps 0))))
 
-(defun update-game ()
-  (let ((dt 0.02))                      ; TODO: calculate actual dt
-    (do-systems (system)
-      (update system dt))
-    (update-fps 5 dt)))
+(let ((last-time))
+  (defun update-game ()
+    (let ((curr-time (get-internal-real-time)))
+      (when last-time
+        (let ((dt (coerce (/ (- curr-time last-time)
+                             internal-time-units-per-second) 'float)))
+          (do-systems (system)
+            (update system dt))
+          (update-fps 5 dt)))
+      (setf last-time curr-time))))
 
 (defun draw-game (win)
   (gl:clear :color-buffer-bit)
