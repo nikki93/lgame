@@ -281,10 +281,10 @@ Returns the entity."
 (defun update-swank ()
   "Handle REPL requests."
   (continuable
-   (let ((connection (or swank::*emacs-connection*
-                         (swank::default-connection))))
-     (when connection
-       (swank::handle-requests connection t)))))
+    (let ((connection (or swank::*emacs-connection*
+                          (swank::default-connection))))
+      (when connection
+        (swank::handle-requests connection t)))))
 
 (let ((nframes 0) (last-fps 0))
   (defun update-fps (period dt)
