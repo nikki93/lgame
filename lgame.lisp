@@ -273,6 +273,8 @@ Returns the entity."
 ;;; game
 ;;;
 
+(defparameter *window* nil)
+
 (defmacro continuable (&body body)
   "Allow continuing execution from errors."
   `(restart-case (progn ,@body)
@@ -306,24 +308,24 @@ Returns the entity."
           (update-fps 5 dt)))
       (setf last-time curr-time))))
 
-(defun draw-game (win)
+(defun draw-game ()
   (gl:clear :color-buffer-bit)
   (do-systems (system)
     (draw system))
   (gl:flush)
-  (sdl2:gl-swap-window win))
+  (sdl2:gl-swap-window *window*))
 
 (defun run-game ()
   (sdl2:with-init (:everything)
-    (sdl2:with-window (win :flags '(:shown :opengl))
-      (sdl2:with-gl-context (gl-context win)
+    (sdl2:with-window (*window* :flags '(:shown :opengl))
+      (sdl2:with-gl-context (gl-context *window*)
         (sdl2:with-event-loop (:method :poll)
           (:quit () t)
           (:idle ()
                  (update-swank)
                  (continuable
                    (update-game)
-                   (draw-game win))))))))
+                   (draw-game))))))))
 
 
 
