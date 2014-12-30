@@ -273,19 +273,6 @@ Returns the entity."
 ;;; game
 ;;;
 
-(defmacro continuable (&body body)
-  "Allow continuing execution from errors."
-  `(restart-case (progn ,@body)
-     (continue () :report "Continue")))
-
-(defun update-swank ()
-  "Handle REPL requests."
-  (continuable
-    (let ((connection (or swank::*emacs-connection*
-                          (swank::default-connection))))
-      (when connection
-        (swank::handle-requests connection t)))))
-
 (let ((nframes 0) (last-fps 0))
   (defun update-fps (period dt)
     (incf nframes)
@@ -295,31 +282,28 @@ Returns the entity."
       (finish-output nil)
       (setf nframes 0 last-fps 0))))
 
-(defun update-game (dt)
-  (do-systems (system)
-    (update system dt))
-  (update-fps 5 dt))
+(defun update-game ()
+  (let ((dt 0.02))                      ; TODO: calculate actual dt
+    (do-systems (system)
+      (update system dt))
+    (update-fps 5 dt)))
 
-(defun draw-game ()
+(defun draw-game (win)
   (gl:clear :color-buffer-bit)
   (do-systems (system)
     (draw system))
   (gl:flush)
-  (sdl:update-display))
+  (sdl2:gl-swap-window win))
 
 (defun run-game ()
-  (sdl:with-init (sdl:sdl-init-video)
-    (sdl:window 640 480 :flags sdl:sdl-opengl)
-    (setf (sdl:frame-rate) 60)
-    (setf cl-opengl-bindings:*gl-get-proc-address*
-          #'sdl-cffi::sdl-gl-get-proc-address)
-    (sdl:with-events ()
-      (:quit-event () t)
-      (:idle ()
-             (update-swank)
-             (continuable
-               (update-game (coerce (sdl:dt) 'float))
-               (draw-game))))))
+  (sdl2:with-init (:everything)
+    (sdl2:with-window (win :flags '(:shown :opengl))
+      (sdl2:with-gl-context (gl-context win)
+        (sdl2:with-event-loop (:method :poll)
+          (:quit () t)
+          (:idle ()
+                 (update-game)
+                 (draw-game win)))))))
 
 
 
