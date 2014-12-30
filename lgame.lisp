@@ -273,6 +273,19 @@ Returns the entity."
 ;;; game
 ;;;
 
+(defmacro continuable (&body body)
+  "Allow continuing execution from errors."
+  `(restart-case (progn ,@body)
+     (continue () :report "Continue")))
+
+(defun update-swank ()
+  "Handle REPL requests."
+  (continuable
+   (let ((connection (or swank::*emacs-connection*
+                         (swank::default-connection))))
+     (when connection
+       (swank::handle-requests connection t)))))
+
 (let ((nframes 0) (last-fps 0))
   (defun update-fps (period dt)
     (incf nframes)
@@ -307,8 +320,10 @@ Returns the entity."
         (sdl2:with-event-loop (:method :poll)
           (:quit () t)
           (:idle ()
-                 (update-game)
-                 (draw-game win)))))))
+                 (update-swank)
+                 (continuable
+                   (update-game)
+                   (draw-game win))))))))
 
 
 
