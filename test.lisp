@@ -21,15 +21,17 @@
 
 (define-entity-system =oscillator= ()
     (define-entity-cell oscillator ()
-      ((rate :initarg :rate :accessor rate :initform 0.5)))
+      ((rate :initarg :rate :accessor rate :initform 0.5)
+       (amp :initarg :amp :accessor amp :initform 1)))
     ((time :initform 0)))
 
 (defmethod update ((system =oscillator=) dt)
   (with-slots (time table) system
     (incf time dt)
     (do-hash (entity cell table)
-      (setf (vec2-y (prop =transform= pos entity))
-            (sin (* 2 PI (rate cell) time))))))
+      (with-slots (rate amp) cell
+        (setf (vec2-y (prop =transform= pos entity))
+              (* amp (sin (* 2 PI rate time))))))))
 
 
 
