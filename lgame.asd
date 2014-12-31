@@ -11,6 +11,7 @@
 
                (:file "util")
                (:file "math")
+               (:file "gfx")
 
                (:file "system")
                (:file "entity")
