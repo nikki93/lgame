@@ -31,6 +31,12 @@
 
 (defparameter *window* nil)
 
+(defun init-game ()
+  (restart-systems))
+
+(defun deinit-game ()
+  (stop-systems))
+
 (let ((nframes 0) (last-fps 0))
   (defun update-fps (period dt)
     (incf nframes)
@@ -63,12 +69,14 @@
     (sdl2:with-window (*window* :flags '(:shown :opengl))
       (sdl2:set-window-position *window* 634 53)
       (sdl2:with-gl-context (gl-context *window*)
+        (init-game)
         (sdl2:with-event-loop (:method :poll)
           (:quit () t)
           (:idle ()
                  (update-swank)
                  (continuable
                    (update-game)
-                   (draw-game))))))))
+                   (draw-game))))
+        (deinit-game)))))
 
 
