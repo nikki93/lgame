@@ -10,7 +10,6 @@
 
 (defmethod update ((system =rotator=) dt)
   (do-hash (entity cell (table system))
-    (declare (ignore cell))
     (incf (prop =transform= rot entity)
           (* dt (prop =rotator= rate entity)))))
 
