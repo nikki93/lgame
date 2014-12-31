@@ -8,5 +8,18 @@
                #:sdl2)
   :serial t
   :components ((:file "package")
-               (:file "lgame")))
+
+               (:file "util")
+               (:file "math")
+
+               (:file "system")
+               (:file "entity")
+               (:file "entity-system")
+
+               (:file "transform")
+               (:file "sprite")
+
+               (:file "game")
+
+               (:file "test")))
 
