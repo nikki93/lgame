@@ -68,8 +68,8 @@
     (dotimes (i n)
       (push
        (create-entity (=transform= :scale (vec2 0.1 0.1)
-                                   :pos (vec2 (symrand) (symrand)))
+                                   :pos (vec2 (* 8 (symrand)) (* 8 (symrand))))
                       (=sprite= :color `(,(symrand) ,(symrand) ,(symrand) 1))
                       (=rotator= :rate (* 180 (symrand)))
-                      (=oscillator= :rate (symrand)))
+                      (=oscillator= :rate (symrand) :amp (* 8 (symrand))))
        *boxes*))))
