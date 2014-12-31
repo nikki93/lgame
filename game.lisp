@@ -72,6 +72,12 @@
 (defun run-game ()
   (with-main
     (sdl2:with-init (:everything)
+      (sdl2:gl-set-attr :context-major-version 3)
+      (sdl2:gl-set-attr :context-minor-version 2)
+      (sdl2:gl-set-attr :context-profile-mask
+                        sdl2-ffi::+SDL-GL-CONTEXT-PROFILE-CORE+)
+      (setf cl-opengl-bindings::*gl-get-proc-address*
+            #'sdl2::gl-get-proc-address)
       (sdl2:with-window (*window* :flags '(:shown :opengl))
         (sdl2:set-window-position *window* 634 53)
         (sdl2:with-gl-context (gl-context *window*)
