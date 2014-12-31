@@ -318,6 +318,7 @@ Returns the entity."
 (defun run-game ()
   (sdl2:with-init (:everything)
     (sdl2:with-window (*window* :flags '(:shown :opengl))
+      (sdl2:set-window-position *window* 634 53)
       (sdl2:with-gl-context (gl-context *window*)
         (sdl2:with-event-loop (:method :poll)
           (:quit () t)
