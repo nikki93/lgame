@@ -34,6 +34,7 @@
 ;;;
 
 (defparameter *window* nil)
+(defparameter *game-running* nil)
 
 (defun init-game ()
   (restart-systems))
@@ -74,14 +75,15 @@
       (sdl2:with-window (*window* :flags '(:shown :opengl))
         (sdl2:set-window-position *window* 634 53)
         (sdl2:with-gl-context (gl-context *window*)
-          (init-game)
-          (sdl2:with-event-loop (:method :poll)
-            (:quit () t)
-            (:idle ()
-                   (update-swank)
-                   (continuable
-                     (update-game)
-                     (draw-game))))
-          (deinit-game))))))
+          (let ((*game-running* t))
+            (init-game)
+            (sdl2:with-event-loop (:method :poll)
+              (:quit () t)
+              (:idle ()
+                     (update-swank)
+                     (continuable
+                       (update-game)
+                       (draw-game))))
+            (deinit-game)))))))
 
 

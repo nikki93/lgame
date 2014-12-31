@@ -52,7 +52,7 @@ currently being visited."
 
 (defun register-system-class (class)
   (pushnew class *system-classes*)
-  (unless (zerop (hash-table-size *systems*))
+  (when *game-running*
     (start-system class)))
 
 (defun clear-system-classes ()
