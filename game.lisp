@@ -18,10 +18,14 @@
         (swank::handle-requests connection t)))))
 
 (defmacro with-main (&body body)
+  #+darwin
   `(sdl2:make-this-thread-main
     (lambda ()
       (sb-int:with-float-traps-masked (:invalid)
-        ,@body))))
+        ,@body)))
+
+  #-darwin
+  `(progn ,@body))
 
 
 
@@ -65,18 +69,19 @@
   (sdl2:gl-swap-window *window*))
 
 (defun run-game ()
-  (sdl2:with-init (:everything)
-    (sdl2:with-window (*window* :flags '(:shown :opengl))
-      (sdl2:set-window-position *window* 634 53)
-      (sdl2:with-gl-context (gl-context *window*)
-        (init-game)
-        (sdl2:with-event-loop (:method :poll)
-          (:quit () t)
-          (:idle ()
-                 (update-swank)
-                 (continuable
-                   (update-game)
-                   (draw-game))))
-        (deinit-game)))))
+  (with-main
+    (sdl2:with-init (:everything)
+      (sdl2:with-window (*window* :flags '(:shown :opengl))
+        (sdl2:set-window-position *window* 634 53)
+        (sdl2:with-gl-context (gl-context *window*)
+          (init-game)
+          (sdl2:with-event-loop (:method :poll)
+            (:quit () t)
+            (:idle ()
+                   (update-swank)
+                   (continuable
+                     (update-game)
+                     (draw-game))))
+          (deinit-game))))))
 
 
