@@ -12,7 +12,8 @@
                                       "sprite.frag"))
      (vao :initform (gl:gen-vertex-array))
      (vbo :initform (car (gl:gen-buffers 1)))
-     (vbo-map)))
+     (vbo-capacity :initform 0)
+     (vbo-map :initform nil)))
 
 (cffi:defcstruct gl-sprite
   (pos :float :count 2)
@@ -22,27 +23,45 @@
 
 
 ;;;
+;;; utils
+;;;
+
+(defun bind-gl-stuff (system)
+  (with-slots (program vao vbo) system
+    (gl:use-program program)
+    (gl:bind-vertex-array vao)
+    (gl:bind-buffer :array-buffer vbo)))
+
+(defun next-pow-2 (n)
+  (do ((p 1 (ash p 1)))
+      ((<= n p) p)))
+
+(defun resize-vbo (system new-size)
+  (with-slots (program vao vbo vbo-map vbo-capacity) system
+    (when (or (< vbo-capacity new-size) (< new-size (/ vbo-capacity 4)))
+      (setf vbo-capacity (next-pow-2 new-size))
+      (bind-gl-stuff system)
+      (unless (null vbo-map)
+        (gl:unmap-buffer :array-buffer))
+      (%gl:buffer-data :array-buffer
+                       (* vbo-capacity (cffi:foreign-type-size
+                                        '(:struct gl-sprite)))
+                       (cffi:null-pointer)
+                       :stream-draw)
+      (setf vbo-map (gl:map-buffer :array-buffer :write-only)))))
+
+
+
+;;;
 ;;; init/deinit
 ;;;
 
-(defparameter *nsprites* 50000)
-
 (defmethod initialize-instance :after ((system =sprite=) &key)
-  ;; init GL stuff
   (with-slots (program vao vbo vbo-map) system
-    (gl:use-program program)
-    (gl:bind-vertex-array vao)
-    (gl:bind-buffer :array-buffer vbo)
-    (bind-vertex-attribs program '(:struct gl-sprite))
-    (%gl:buffer-data :array-buffer
-                     (* *nsprites* (cffi:foreign-type-size
-                                    '(:struct gl-sprite)))
-                     (cffi:null-pointer)
-                     :stream-draw)
-    (setf vbo-map (gl:map-buffer :array-buffer :write-only)))) 
+    (bind-gl-stuff system)
+    (bind-vertex-attribs program '(:struct gl-sprite)))) 
 
 (defmethod deinitialize-instance :before ((system =sprite=))
-  ;; deinit GL stuff
   (with-slots (program vao vbo vbo-map) system
     (gl:delete-buffers (list vbo))
     (gl:delete-vertex-arrays (list vao))
@@ -55,10 +74,10 @@
 ;;;
 
 (defmethod update ((system =sprite=) dt)
-  ;; update VBO data
-  (with-slots (vbo-map) system
+  (with-slots (table vbo-map) system
+    (resize-vbo system (hash-table-count table))
     (let ((i 0))
-      (do-hash (entity cell (table system))
+      (do-hash (entity cell table)
         (with-cstruct-slots (((:pointer pos) (:pointer cell) (:pointer size))
                              (cffi:mem-aptr vbo-map '(:struct gl-sprite) i)
                              (:struct gl-sprite))
@@ -70,10 +89,7 @@
         (incf i)))))
 
 (defmethod draw ((system =sprite=))
-  (with-slots (program vao vbo) system
-    (gl:use-program program)
-    (gl:bind-vertex-array vao)
-    (gl:bind-buffer :array-buffer vbo)
-    (gl:draw-arrays :points 0 (hash-table-count (table system)))))
+  (bind-gl-stuff system)
+  (gl:draw-arrays :points 0 (hash-table-count (table system))))
 
 
