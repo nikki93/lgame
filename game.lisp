@@ -18,11 +18,16 @@
         (swank::handle-requests connection t)))))
 
 (defmacro with-main (&body body)
-  #+darwin
+  #+(and sbcl darwin)
   `(sdl2:make-this-thread-main
     (lambda ()
       (sb-int:with-float-traps-masked (:invalid)
         ,@body)))
+
+  #+(and (not sbcl) darwin)
+  `(sdl2:make-this-thread-main
+    (lambda ()
+      ,@body))
 
   #-darwin
   `(progn ,@body))
