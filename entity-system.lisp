@@ -12,8 +12,8 @@
     :documentation "The entity for which this cell holds data.")))
 
 (defmethod deinitialize-instance ((cell entity-cell))
-  "Called when a cell is discarded, for example when its entity
-is removed from the system. By default this does nothing."
+  "Called when a cell is discarded, for example when its entity is removed from
+the system. By default this does nothing."
   nil)
 
 (defmacro define-entity-cell (class-name superclasses &body body)
