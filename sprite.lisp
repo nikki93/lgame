@@ -65,7 +65,7 @@
   (with-slots (program vao vbo vbo-map) system
     (gl:delete-buffers (list vbo))
     (gl:delete-vertex-arrays (list vao))
-    (gl:delete-program program)))
+    (when (gl:is-program program) (gl:delete-program program))))
 
 
 
