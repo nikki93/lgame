@@ -33,8 +33,7 @@
 ;;; main procedures
 ;;;
 
-(defparameter *window* nil)
-(defparameter *game-running* nil)
+(defvar *window* nil)
 
 (defun init-game ()
   (restart-systems))

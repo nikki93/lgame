@@ -50,6 +50,8 @@ currently being visited."
               *systems*)))
 
 
+(defvar *game-running* nil)
+
 (defun register-system-class (class)
   (pushnew class *system-classes*)
   (when *game-running*
