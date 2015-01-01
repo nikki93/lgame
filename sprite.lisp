@@ -16,9 +16,7 @@
      (vbo-map :initform nil)))
 
 (cffi:defcstruct gl-sprite
-  (pos :float :count 2)
-  (cell :float :count 2)
-  (size :float :count 2))
+  (pos :float :count 2))
 
 
 
@@ -56,9 +54,8 @@
 ;;;
 
 (defmethod initialize-instance :after ((system =sprite=) &key)
-  (with-slots (program vbo-map) system
-    (bind-gl-stuff system)
-    (bind-vertex-attribs program '(:struct gl-sprite)))) 
+  (bind-gl-stuff system)
+  (bind-vertex-attribs (slot-value system 'program) '(:struct gl-sprite))) 
 
 (defmethod deinitialize-instance :before ((system =sprite=))
   (with-slots (program vao vbo) system
@@ -72,12 +69,12 @@
 ;;; events
 ;;;
 
-(defmethod update ((system =sprite=) dt)
+(defun update-vbo-data (system)
   (with-slots (table vbo-map) system
     (resize-vbo system (hash-table-count table))
     (let ((i 0))
       (do-hash (entity cell table)
-        (with-cstruct-slots (((:pointer pos) (:pointer cell) (:pointer size))
+        (with-cstruct-slots (((:pointer pos))
                              (cffi:mem-aptr vbo-map '(:struct gl-sprite) i)
                              (:struct gl-sprite))
           (with-slots ((transform-pos pos) rot scale) (cell =transform= entity)
@@ -88,6 +85,7 @@
         (incf i)))))
 
 (defmethod draw ((system =sprite=))
+  (update-vbo-data system)
   (bind-gl-stuff system)
   (gl:draw-arrays :points 0 (hash-table-count (table system))))
 
