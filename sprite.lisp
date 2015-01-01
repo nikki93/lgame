@@ -37,12 +37,11 @@
       ((<= n p) p)))
 
 (defun resize-vbo (system new-size)
-  (with-slots (program vao vbo vbo-map vbo-capacity) system
-    (when (or (< vbo-capacity new-size) (< new-size (/ vbo-capacity 4)))
-      (setf vbo-capacity (next-pow-2 new-size))
+  (with-slots (vbo-map vbo-capacity) system
+    (unless (<= (/ vbo-capacity 4) new-size vbo-capacity)
+      (setf vbo-capacity (max 16 (next-pow-2 new-size)))
       (bind-gl-stuff system)
-      (unless (null vbo-map)
-        (gl:unmap-buffer :array-buffer))
+      (when vbo-map (gl:unmap-buffer :array-buffer))
       (%gl:buffer-data :array-buffer
                        (* vbo-capacity (cffi:foreign-type-size
                                         '(:struct gl-sprite)))
@@ -57,12 +56,12 @@
 ;;;
 
 (defmethod initialize-instance :after ((system =sprite=) &key)
-  (with-slots (program vao vbo vbo-map) system
+  (with-slots (program vbo-map) system
     (bind-gl-stuff system)
     (bind-vertex-attribs program '(:struct gl-sprite)))) 
 
 (defmethod deinitialize-instance :before ((system =sprite=))
-  (with-slots (program vao vbo vbo-map) system
+  (with-slots (program vao vbo) system
     (gl:delete-buffers (list vbo))
     (gl:delete-vertex-arrays (list vao))
     (when (gl:is-program program) (gl:delete-program program))))
