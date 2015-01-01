@@ -30,6 +30,15 @@
 
 
 ;;;
+;;; interface
+;;;
+
+(defun quit-game ()
+  (sdl2:push-event :quit))
+
+
+
+;;;
 ;;; main procedures
 ;;;
 
