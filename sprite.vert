@@ -1,9 +1,13 @@
 #version 150
 
-in vec2 pos;
+in vec3 wmat0;
+in vec3 wmat1;
+in vec3 wmat2;
+
+out mat3 wmat;
 
 void main()
 {
-    gl_Position = vec4(pos, 0.0, 1.0);
+    wmat = mat3(wmat0, wmat1, wmat2);
 }
 

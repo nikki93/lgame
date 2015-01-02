@@ -16,7 +16,9 @@
      (vbo-map :initform nil)))
 
 (cffi:defcstruct gl-sprite
-  (pos :float :count 2))
+  (wmat0 :float :count 3)
+  (wmat1 :float :count 3)
+  (wmat2 :float :count 3))
 
 
 
@@ -74,14 +76,21 @@
     (resize-vbo system (hash-table-count table))
     (let ((i 0))
       (do-hash (entity cell table)
-        (with-cstruct-slots (((:pointer pos))
+        (with-cstruct-slots (((:pointer wmat0)
+                              (:pointer wmat1)
+                              (:pointer wmat2))
                              (cffi:mem-aptr vbo-map '(:struct gl-sprite) i)
                              (:struct gl-sprite))
-          (with-slots ((transform-pos pos) rot scale) (cell =transform= entity)
-            (setf (cffi:mem-aref pos :float 0)
-                  (coerce (vec2-x transform-pos) 'float))
-            (setf (cffi:mem-aref pos :float 1)
-                  (coerce (vec2-y transform-pos) 'float))))
+          (let ((wmat (world-matrix =transform= entity)))
+            (setf (cffi:mem-aref wmat0 :float 0) (mat3-ref wmat 0 0))
+            (setf (cffi:mem-aref wmat0 :float 1) (mat3-ref wmat 0 1))
+            (setf (cffi:mem-aref wmat0 :float 2) (mat3-ref wmat 0 2))
+            (setf (cffi:mem-aref wmat1 :float 0) (mat3-ref wmat 1 0))
+            (setf (cffi:mem-aref wmat1 :float 1) (mat3-ref wmat 1 1))
+            (setf (cffi:mem-aref wmat1 :float 2) (mat3-ref wmat 1 2))
+            (setf (cffi:mem-aref wmat2 :float 0) (mat3-ref wmat 2 0))
+            (setf (cffi:mem-aref wmat2 :float 1) (mat3-ref wmat 2 1))
+            (setf (cffi:mem-aref wmat2 :float 2) (mat3-ref wmat 2 2))))
         (incf i)))))
 
 (defmethod draw ((system =sprite=))
