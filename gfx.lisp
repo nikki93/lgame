@@ -18,7 +18,8 @@
         (gl:shader-source shader string)
         (gl:compile-shader shader)
         (unless (gl:get-shader shader :compile-status)
-          (error (format nil "Failed to compile shader '~a'." path)))
+          (error (format nil "Failed to compile shader '~a':~%~a"
+                         path (gl:get-shader-info-log shader))))
         shader))))
 
 (defun load-program (&rest args)
