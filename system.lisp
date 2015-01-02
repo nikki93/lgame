@@ -24,8 +24,9 @@ special variable for easy access)."
   `(progn
      (defclass ,class-name (,@superclasses =system=)
        ,@body)
-     (eval-when (:load-toplevel :execute) ; TODO: is this right?
-       (defvar ,class-name nil)
+     (eval-when (:compile-toplevel :load-toplevel :execute)
+       (defvar ,class-name nil))
+     (eval-when (:load-toplevel :execute)
        (register-system-class ',class-name))))
 
 
