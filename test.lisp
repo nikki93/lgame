@@ -10,8 +10,8 @@
 
 (defmethod update ((system =rotator=) dt)
   (do-hash (entity cell (table system))
-    (incf (prop =transform= rot entity)
-          (* dt (prop =rotator= rate entity)))))
+    (incf (rot (=transform= entity))
+          (* dt (rate (=rotator= entity))))))
 
 
 
@@ -30,7 +30,7 @@
     (incf time dt)
     (do-hash (entity cell table)
       (with-slots (rate amp) cell
-        (setf (vec2-y (prop =transform= pos entity))
+        (setf (vec2-y (pos (=transform= entity)))
               (* amp (sin (* 2 PI rate time))))))))
 
 
