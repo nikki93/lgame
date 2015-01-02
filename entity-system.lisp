@@ -48,9 +48,12 @@ table. Must be a subclass of entity-cell.")
 =entity-system= as a base class."
   (let ((cell-class-var (gensym)))
     `(let ((,cell-class-var ,cell-class))
-       (define-system ,class-name (,@superclasses =entity-system=)
-         (,@slots (cell-class :initform ,cell-class-var))
-         ,@rest))))
+       (progn
+         (define-system ,class-name (,@superclasses =entity-system=)
+          (,@slots (cell-class :initform ,cell-class-var))
+          ,@rest)
+         (defun ,class-name (entity)
+           (gethash entity (table ,class-name)))))))
 
 
 ;;; interface
@@ -94,9 +97,5 @@ Returns the entity."
 (defun cell (system entity)
   "Get the cell for an entity in an entity-system, nil if not found."
   (gethash entity (table system)))
-
-(defmacro prop (system accessor entity)
-  "Invoke an accessor on a cell for an entity in an entity-system. Setf-able."
-  `(,accessor (cell ,system ,entity)))
 
 
