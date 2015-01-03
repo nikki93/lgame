@@ -6,7 +6,8 @@
 
 (define-entity-system =sprite= ()
     (define-entity-cell sprite ()
-      ())
+      ((texcell :initform (vec2  0 64) :initarg :texcell :accessor texcell)
+       (texsize :initform (vec2 32 32) :initarg :texsize :accessor texsize)))
     ((program :initform (load-program "sprite.vert"
                                       "sprite.geom"
                                       "sprite.frag"))
@@ -17,9 +18,11 @@
      (atlas-tex :initform (image->texture "atlas.png"))))
 
 (cffi:defcstruct gl-sprite
-  (wmat0 :float :count 3)
-  (wmat1 :float :count 3)
-  (wmat2 :float :count 3))
+  (wmat0 :float :count 3)               ; need to split up matrix into columns
+  (wmat1 :float :count 3)               ; to bind as shader vertex attribute
+  (wmat2 :float :count 3)
+  (texcell :float :count 2)
+  (texsize :float :count 2))
 
 
 
@@ -84,9 +87,8 @@
     (resize-vbo system (hash-table-count table))
     (let ((i 0))
       (do-hash (entity cell table)
-        (with-cstruct-slots (((:pointer wmat0)
-                              (:pointer wmat1)
-                              (:pointer wmat2))
+        (with-cstruct-slots (((:pointer wmat0) (:pointer wmat1) (:pointer wmat2)
+                              (:pointer texcell) (:pointer texsize))
                              (cffi:mem-aptr vbo-map '(:struct gl-sprite) i)
                              (:struct gl-sprite))
           (let ((wmat (world-matrix (=transform= entity))))
@@ -98,7 +100,12 @@
             (setf (cffi:mem-aref wmat1 :float 2) (mat3-ref wmat 1 2))
             (setf (cffi:mem-aref wmat2 :float 0) (mat3-ref wmat 2 0))
             (setf (cffi:mem-aref wmat2 :float 1) (mat3-ref wmat 2 1))
-            (setf (cffi:mem-aref wmat2 :float 2) (mat3-ref wmat 2 2))))
+            (setf (cffi:mem-aref wmat2 :float 2) (mat3-ref wmat 2 2)))
+          (with-slots ((spr-texcell texcell) (spr-texsize texsize)) cell
+            (setf (cffi:mem-aref texcell :float 0) (vec2-x spr-texcell))
+            (setf (cffi:mem-aref texcell :float 1) (vec2-y spr-texcell))
+            (setf (cffi:mem-aref texsize :float 0) (vec2-x spr-texsize))
+            (setf (cffi:mem-aref texsize :float 1) (vec2-y spr-texsize))))
         (incf i)))))
 
 (defmethod draw ((system =sprite=))
