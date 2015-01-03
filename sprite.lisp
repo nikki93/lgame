@@ -13,7 +13,8 @@
      (vao :initform (gl:gen-vertex-array))
      (vbo :initform (car (gl:gen-buffers 1)))
      (vbo-capacity :initform 0)
-     (vbo-map :initform nil)))
+     (vbo-map :initform nil)
+     (atlas-tex :initform (image->texture "atlas.png"))))
 
 (cffi:defcstruct gl-sprite
   (wmat0 :float :count 3)
@@ -27,10 +28,11 @@
 ;;;
 
 (defun bind-gl-stuff (system)
-  (with-slots (program vao vbo) system
+  (with-slots (program vao vbo atlas-tex) system
     (gl:use-program program)
     (gl:bind-vertex-array vao)
-    (gl:bind-buffer :array-buffer vbo)))
+    (gl:bind-buffer :array-buffer vbo)
+    (gl:bind-texture :texture-2d atlas-tex)))
 
 (defun next-pow-2 (n)
   (do ((p 1 (ash p 1)))
@@ -57,10 +59,16 @@
 
 (defmethod initialize-instance :after ((system =sprite=) &key)
   (bind-gl-stuff system)
-  (bind-vertex-attribs (slot-value system 'program) '(:struct gl-sprite))) 
+  (with-slots (program) system
+   (bind-vertex-attribs program '(:struct gl-sprite))
+   (gl:uniformi (gl:get-uniform-location program "tex0") 0)
+   (gl:uniformf (gl:get-uniform-location program "atlas_size")
+                (gl:get-tex-level-parameter :texture-2d 0 :texture-width)
+                (gl:get-tex-level-parameter :texture-2d 0 :texture-height))))
 
 (defmethod deinitialize-instance :before ((system =sprite=))
-  (with-slots (program vao vbo) system
+  (with-slots (program vao vbo atlas-tex) system
+    (gl:delete-textures (list atlas-tex))
     (gl:delete-buffers (list vbo))
     (gl:delete-vertex-arrays (list vao))
     (when (gl:is-program program) (gl:delete-program program))))
