@@ -8,10 +8,8 @@
     (define-entity-cell rotator ()
       ((rate :initform 0.02 :initarg :rate :accessor rate))))
 
-(defmethod update ((system =rotator=) dt)
-  (do-hash (entity cell (table system))
-    (incf (rot (=transform= entity))
-          (* dt (rate (=rotator= entity))))))
+(defmethod update ((rotator rotator) dt)
+  (incf (rot (=transform= (entity rotator))) (* 2 dt (rate rotator))))
 
 
 
@@ -23,15 +21,15 @@
     (define-entity-cell oscillator ()
       ((rate :initarg :rate :accessor rate :initform 0.5)
        (amp :initarg :amp :accessor amp :initform 1)))
-    ((time :initform 0)))
+    ((elapsed :initform 0 :accessor elapsed)))
 
-(defmethod update ((system =oscillator=) dt)
-  (with-slots (time table) system
-    (incf time dt)
-    (do-hash (entity cell table)
-      (with-slots (rate amp) cell
-        (setf (vec2-y (pos (=transform= entity)))
-              (* amp (sin (* 2 PI rate time))))))))
+(defmethod update ((oscillator oscillator) dt)
+  (with-slots (entity rate amp) oscillator
+    (setf (vec2-y (pos (=transform= entity)))
+          (* amp (sin (* 2 PI rate (elapsed =oscillator=)))))))
+
+(defmethod update :before ((system =oscillator=) dt)
+  (incf (elapsed =oscillator=) dt))
 
 
 
