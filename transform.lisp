@@ -16,9 +16,7 @@
 ;;; interface
 ;;;
 
-(defmethod world-matrix ((system =transform=) ent)
-  (let ((cell (cell system ent)))
-    (assert cell)
-    (transform->mat3 (scale cell) (rot cell) (pos cell))))
+(defmethod world-matrix ((transform transform))
+  (transform->mat3 (scale transform) (rot transform) (pos transform)))
 
 

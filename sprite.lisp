@@ -81,7 +81,7 @@
                               (:pointer wmat2))
                              (cffi:mem-aptr vbo-map '(:struct gl-sprite) i)
                              (:struct gl-sprite))
-          (let ((wmat (world-matrix =transform= entity)))
+          (let ((wmat (world-matrix (=transform= entity))))
             (setf (cffi:mem-aref wmat0 :float 0) (mat3-ref wmat 0 0))
             (setf (cffi:mem-aref wmat0 :float 1) (mat3-ref wmat 0 1))
             (setf (cffi:mem-aref wmat0 :float 2) (mat3-ref wmat 0 2))
