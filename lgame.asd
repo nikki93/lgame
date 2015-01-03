@@ -5,7 +5,8 @@
   :author "Nikhilesh Sigatapu <s.nikhilesh@gmail.com>"
   :license "MIT"
   :depends-on (#:cl-opengl
-               #:sdl2)
+               #:sdl2
+               #:png-read)
   :serial t
   :components ((:file "package")
 

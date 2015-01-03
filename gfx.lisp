@@ -54,3 +54,30 @@ variable in the program."
         (gl:enable-vertex-attrib-array location)))))
 
 
+
+;;;
+;;; texture utilities
+;;;
+
+(defun image->texture (path &key texture-min-filter texture-mag-filter)
+  "Read an image file into an OpenGL texture. Returns texture, width, height. "
+  (let* ((image (png-read:read-png-file path))
+         (data (png-read:image-data image))
+         (width (array-dimension data 1))
+         (height (array-dimension data 0))
+         (image-data (make-array (* width height 4)
+                                 :element-type '(unsigned-byte 8)
+                                 :displaced-to data))
+         (texture (car (gl:gen-textures 1))))
+    (gl:active-texture :texture0)
+    (gl:bind-texture :texture-2d texture)
+    (gl:tex-parameter :texture-2d :texture-min-filter
+                      (or texture-min-filter :nearest))
+    (gl:tex-parameter :texture-2d :texture-mag-filter
+                      (or texture-mag-filter :nearest))
+    (gl:tex-image-2d :texture-2d 0 :rgba
+                     width height 0
+                     :rgba :unsigned-byte image-data)
+    (values texture width height)))
+
+
