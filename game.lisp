@@ -51,7 +51,6 @@
 (defvar *window* nil)
 
 (defun init-game ()
-  (sdl2:set-window-position *window* 634 53)
   (gl:enable :blend)
   (gl:blend-func :src-alpha :one-minus-src-alpha)
   (gl:disable :depth-test)
@@ -88,7 +87,8 @@
   (gl:flush)
   (sdl2:gl-swap-window *window*))
 
-(defun run-game ()
+(defun run-game (&key (x :centered) (y :centered) (w 800) (h 600))
+  (sdl2:set-window-position *window* 634 53)
   (with-main
     (sdl2:with-init (:everything)
       (sdl2:gl-set-attr :context-major-version 3)
@@ -97,7 +97,8 @@
                         sdl2-ffi::+SDL-GL-CONTEXT-PROFILE-CORE+)
       (setf cl-opengl-bindings::*gl-get-proc-address*
             #'sdl2::gl-get-proc-address)
-      (sdl2:with-window (*window* :flags '(:shown :opengl))
+      (sdl2:with-window (*window* :title "lgame" :x x :y y :w w :h h
+                                  :flags '(:shown :opengl))
         (sdl2:with-gl-context (gl-context *window*)
           (let ((*game-running* t))
             (init-game)
