@@ -45,14 +45,14 @@
 (defun test-basic ()
   (setf *player*
         (create-entity (=transform= :scale (vec2 2 2))
-                       (=sprite= :color '(1 0 0 1))
+                       (=sprite=)
                        (=rotator= :rate (/ PI 2))))
 
   (add-to-systems *player* (=oscillator= :rate 0.5))
 
   (setf *enemy*
         (create-entity (=transform= :pos (vec2 -0.5 0))
-                       (=sprite= :color '(0 1 0 1))
+                       (=sprite=)
                        (=rotator= :rate PI)
                        (=oscillator= :rate 1))))
 
@@ -67,7 +67,7 @@
     (dotimes (i n)
       (push
        (create-entity (=transform= :pos (vec2 (* 8 (symrand)) (* 8 (symrand))))
-                      (=sprite= :color `(,(symrand) ,(symrand) ,(symrand) 1))
+                      (=sprite=)
                       (=rotator= :rate (* PI (symrand)))
                       (=oscillator= :rate (symrand) :amp (* 8 (symrand))))
        *boxes*))))

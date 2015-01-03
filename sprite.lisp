@@ -6,7 +6,7 @@
 
 (define-entity-system =sprite= ()
     (define-entity-cell sprite ()
-      ((color :initform '(1 0 0 1) :initarg :color :accessor color)))
+      ())
     ((program :initform (load-program "sprite.vert"
                                       "sprite.geom"
                                       "sprite.frag"))
