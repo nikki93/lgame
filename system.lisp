@@ -97,13 +97,10 @@ currently being visited."
 ;;; basic events
 ;;;
 
-(defgeneric update (system dt)
-  (:documentation "Step a system forward by dt.")
-  (:method ((system =system=) dt)
-    (declare (ignore dt))))
+(defmethod update ((system =system=) dt)
+  )
 
-(defgeneric draw (system)
-  (:documentation "Draw a system to the screen.")
-  (:method ((system =system=))))
+(defmethod draw ((system =system=))
+  )
 
 

@@ -14,6 +14,7 @@
                (:file "math")
                (:file "gfx")
 
+               (:file "generics")
                (:file "system")
                (:file "entity")
                (:file "entity-system")
