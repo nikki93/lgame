@@ -23,6 +23,9 @@ base class)."
   `(defclass ,class-name (,@superclasses entity-cell)
      ,@body))
 
+(defmethod update ((cell entity-cell) dt)
+  )
+
 
 
 ;;;
@@ -96,5 +99,12 @@ Returns the entity."
 (defun cell (system entity)
   "Get the cell for an entity in an entity-system, nil if not found."
   (gethash entity (table system)))
+
+
+;;; events
+
+(defmethod update ((system =entity-system=) dt)
+  (do-hash (ent cell (table system))
+    (update cell dt)))
 
 
