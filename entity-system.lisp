@@ -66,8 +66,7 @@ if the entity is already in the system.")
     (with-slots (table cell-class) system
       (unless (gethash entity table)
         (setf (gethash entity table)
-              (apply #'make-instance
-                     (list* cell-class :entity entity args)))))))
+              (apply #'make-instance cell-class :entity entity args))))))
 
 (defgeneric remove-from-system (system entity)
   (:documentation "Remove entity from an entity-system. By default removes the
