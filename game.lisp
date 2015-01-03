@@ -51,6 +51,11 @@
 (defvar *window* nil)
 
 (defun init-game ()
+  (sdl2:set-window-position *window* 634 53)
+  (gl:enable :blend)
+  (gl:blend-func :src-alpha :one-minus-src-alpha)
+  (gl:disable :depth-test)
+  (gl:clear-color 0.95 0.95 0.95 1)
   (restart-systems))
 
 (defun deinit-game ()
@@ -93,7 +98,6 @@
       (setf cl-opengl-bindings::*gl-get-proc-address*
             #'sdl2::gl-get-proc-address)
       (sdl2:with-window (*window* :flags '(:shown :opengl))
-        (sdl2:set-window-position *window* 634 53)
         (sdl2:with-gl-context (gl-context *window*)
           (let ((*game-running* t))
             (init-game)
