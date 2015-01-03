@@ -11,6 +11,7 @@
 
 (defun update-swank ()
   "Handle REPL requests."
+  #+swank
   (continuable
     (let ((connection (or swank::*emacs-connection*
                           (swank::default-connection))))
