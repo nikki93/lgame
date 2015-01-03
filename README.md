@@ -22,5 +22,5 @@ Now you're ready to roll! Just run,
 Check the bottom of test.lisp to see how the oscillator and rotator
 systems are defined. You can interact with the game in real-time using
 the REPL. For example, `(run-game)` then `(test-basic)`. Then `(setf
-(prop =oscillator= rate *player*) 3)` while the game is running.
+(rate (=oscillator= player)) 3)` while the game is running.
 
