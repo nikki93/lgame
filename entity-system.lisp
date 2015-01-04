@@ -49,14 +49,13 @@ table. Must be a subclass of entity-cell.")
                                 &body rest)
   "Like 'define-system,' except you define the cell class inline and it adds
 =entity-system= as a base class."
-  (let ((cell-class-var (gensym)))
-    `(let ((,cell-class-var ,cell-class))
-       (progn
-         (define-system ,class-name (,@superclasses =entity-system=)
-          (,@slots (cell-class :initform ,cell-class-var))
-          ,@rest)
-         (defun ,class-name (entity)
-           (gethash entity (table ,class-name)))))))
+  `(progn
+     ,cell-class
+     (define-system ,class-name (,@superclasses =entity-system=)
+       (,@slots (cell-class :initform ',(second cell-class)))
+       ,@rest)
+     (defun ,class-name (entity)
+       (gethash entity (table ,class-name)))))
 
 
 ;;; interface
