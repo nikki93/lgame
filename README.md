@@ -1,3 +1,5 @@
+![lgame](screenshot.png "lgame")
+
 An attempt at reducing creative friction between the artist and the
 artwork.
 
