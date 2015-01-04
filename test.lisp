@@ -65,7 +65,7 @@
     (dotimes (i n)
       (push
        (create-entity (=transform= :pos (vec2 (* 8 (symrand)) (* 8 (symrand))))
-                      (=sprite=)
+                      (=sprite= :texcell (vec2 (* (random 2) 32) 64))
                       (=rotator= :rate (* PI (symrand)))
                       (=oscillator= :rate (symrand) :amp (* 8 (symrand))))
        *boxes*))))
