@@ -1,6 +1,20 @@
 (in-package #:lgame)
 
 ;;;
+;;; variables
+;;;
+
+(defvar *source-directory* (asdf:system-source-directory '#:lgame)
+  "Pathname to merge in order to resolve relative pathnames.")
+
+;;;
+;;; functions
+;;;
+
+(defun resolve-filename (pathspec)
+  (namestring (merge-pathnames pathspec *source-directory*)))
+
+;;;
 ;;; macros
 ;;;
 

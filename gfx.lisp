@@ -5,9 +5,10 @@
 ;;; shader utilities
 ;;;
 
-(defun load-shader (path)
+(defun load-shader (pathspec)
   "Load a shader given a path. Shader type is guessed from filename."
-  (let* ((ext (subseq path (- (length path) 4)))
+  (let* ((path (resolve-filename pathspec))
+         (ext (subseq path (- (length path) 4)))
          (type (cond ((equal ext "vert") :vertex-shader)
                      ((equal ext "frag") :fragment-shader)
                      ((equal ext "geom") :geometry-shader))))
@@ -59,9 +60,10 @@ variable in the program."
 ;;; texture utilities
 ;;;
 
-(defun image->texture (path &key texture-min-filter texture-mag-filter)
+(defun image->texture (pathspec &key texture-min-filter texture-mag-filter)
   "Read an image file into an OpenGL texture. Returns texture, width, height. "
-  (let* ((image (png-read:read-png-file path))
+  (let* ((path (resolve-filename pathspec))
+         (image (png-read:read-png-file path))
          (data (png-read:image-data image))
          (width (array-dimension data 1))
          (height (array-dimension data 0))
