@@ -88,7 +88,6 @@
   (sdl2:gl-swap-window *window*))
 
 (defun run-game (&key (x :centered) (y :centered) (w 800) (h 600))
-  (sdl2:set-window-position *window* 634 53)
   (with-main
     (sdl2:with-init (:everything)
       (sdl2:gl-set-attr :context-major-version 3)
