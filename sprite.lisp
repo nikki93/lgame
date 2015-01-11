@@ -30,21 +30,14 @@
 ;;; utils
 ;;;
 
-(defun bind-gl-stuff (system)
-  (with-slots (program vao vbo atlas-tex) system
-    (gl:use-program program)
-    (gl:bind-vertex-array vao)
-    (gl:bind-buffer :array-buffer vbo)
-    (gl:bind-texture :texture-2d atlas-tex)))
-
 (defun next-pow-2 (n)
   (do ((p 1 (ash p 1)))
       ((<= n p) p)))
 
 (defun map-vbo (system new-size)
   (setf new-size (max 1 new-size))      ; always map a positive size
-  (with-slots (vbo-map vbo-capacity) system
-    (bind-gl-stuff system)
+  (with-slots (vbo vbo-map vbo-capacity) system
+    (gl:bind-buffer :array-buffer vbo)
     (unless (<= (/ vbo-capacity 4) new-size vbo-capacity)
       (setf vbo-capacity (max 16 (next-pow-2 new-size)))
       (unmap-vbo system)
@@ -62,6 +55,13 @@
       (gl:bind-buffer :array-buffer vbo)
       (gl:unmap-buffer :array-buffer)
       (setf vbo-map nil))))
+
+(defun bind-gl-stuff (system)
+  (with-slots (program vao vbo atlas-tex) system
+    (gl:use-program program)
+    (gl:bind-vertex-array vao)
+    (gl:bind-buffer :array-buffer vbo)
+    (gl:bind-texture :texture-2d atlas-tex)))
 
 
 
