@@ -41,18 +41,27 @@
   (do ((p 1 (ash p 1)))
       ((<= n p) p)))
 
-(defun resize-vbo (system new-size)
+(defun map-vbo (system new-size)
+  (setf new-size (max 1 new-size))      ; always map a positive size
   (with-slots (vbo-map vbo-capacity) system
+    (bind-gl-stuff system)
     (unless (<= (/ vbo-capacity 4) new-size vbo-capacity)
       (setf vbo-capacity (max 16 (next-pow-2 new-size)))
-      (bind-gl-stuff system)
-      (when vbo-map (gl:unmap-buffer :array-buffer))
+      (unmap-vbo system)
       (%gl:buffer-data :array-buffer
                        (* vbo-capacity (cffi:foreign-type-size
                                         '(:struct gl-sprite)))
                        (cffi:null-pointer)
-                       :stream-draw)
+                       :stream-draw))
+    (unless vbo-map
       (setf vbo-map (gl:map-buffer :array-buffer :write-only)))))
+
+(defun unmap-vbo (system)
+  (with-slots (vbo vbo-map) system
+    (when vbo-map
+      (gl:bind-buffer :array-buffer vbo)
+      (gl:unmap-buffer :array-buffer)
+      (setf vbo-map nil))))
 
 
 
@@ -63,11 +72,11 @@
 (defmethod initialize-instance :after ((system =sprite=) &key)
   (bind-gl-stuff system)
   (with-slots (program) system
-   (bind-vertex-attribs program '(:struct gl-sprite))
-   (gl:uniformi (gl:get-uniform-location program "tex0") 0)
-   (gl:uniformf (gl:get-uniform-location program "atlas_size")
-                (gl:get-tex-level-parameter :texture-2d 0 :texture-width)
-                (gl:get-tex-level-parameter :texture-2d 0 :texture-height))))
+    (bind-vertex-attribs program '(:struct gl-sprite))
+    (gl:uniformi (gl:get-uniform-location program "tex0") 0)
+    (gl:uniformf (gl:get-uniform-location program "atlas_size")
+                 (gl:get-tex-level-parameter :texture-2d 0 :texture-width)
+                 (gl:get-tex-level-parameter :texture-2d 0 :texture-height))))
 
 (defmethod deinitialize-instance :before ((system =sprite=))
   (with-slots (program vao vbo atlas-tex) system
@@ -84,7 +93,7 @@
 
 (defun update-vbo-data (system)
   (with-slots (table vbo-map) system
-    (resize-vbo system (hash-table-count table))
+    (map-vbo system (hash-table-count table))
     (let ((i 0))
       (do-hash (entity cell table)
         (with-cstruct-slots (((:pointer wmat0) (:pointer wmat1) (:pointer wmat2)
@@ -111,6 +120,7 @@
 (defmethod draw ((system =sprite=))
   (update-vbo-data system)
   (bind-gl-stuff system)
+  (unmap-vbo system)
   (gl:draw-arrays :points 0 (hash-table-count (table system))))
 
 
