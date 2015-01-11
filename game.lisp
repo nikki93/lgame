@@ -87,8 +87,9 @@
                         sdl2-ffi::+SDL-GL-CONTEXT-PROFILE-CORE+)
       (setf cl-opengl-bindings::*gl-get-proc-address*
             #'sdl2::gl-get-proc-address)
-      (sdl2:with-window (*window* :title "lgame" :x x :y y :w w :h h
+      (sdl2:with-window (window :title "lgame" :x x :y y :w w :h h
                                   :flags '(:shown :opengl))
+        (setf *window* window)
         (sdl2:with-gl-context (gl-context *window*)
           (let ((*game-running* t))
             (init-game)
@@ -99,6 +100,7 @@
                      (continuable
                        (update-game)
                        (draw-game))))
-            (deinit-game)))))))
+            (deinit-game))))
+      (setf *window* nil))))
 
 
