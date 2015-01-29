@@ -44,6 +44,10 @@ table. Must be a subclass of entity-cell.")
     :accessor table
     :documentation "Entity -> cell hash table.")))
 
+(defmacro cell (system entity)
+  "Get the cell for an entity in an entity-system, nil if not found."
+  `(gethash ,entity (table ,system)))
+
 (defmacro define-entity-system (class-name superclasses
                                 cell-class &optional slots
                                 &body rest)
@@ -55,7 +59,7 @@ table. Must be a subclass of entity-cell.")
        (,@slots (cell-class :initform ',(second cell-class)))
        ,@rest)
      (defun ,class-name (entity)
-       (gethash entity (table ,class-name)))))
+       (cell ,class-name entity))))
 
 
 ;;; interface
@@ -94,10 +98,6 @@ Returns the entity."
               `(add-to-system ,(first form) ,entity-var ,@(rest form)))
           body)
        ,entity-var)))
-
-(defun cell (system entity)
-  "Get the cell for an entity in an entity-system, nil if not found."
-  (gethash entity (table system)))
 
 
 ;;; events
