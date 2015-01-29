@@ -15,4 +15,9 @@ ideas/todo
   - if you fix the above make sure to forward cell initargs and change
     the name of the deinit counterpart
 
+- add a next-frame macro to run stuff at the end of the frame
+  (http://3bb.cc/tutorials/cl-opengl/2d-sprites.html)
+
+- add entity cell caching -- each cell keeps track of frequently-queried
+  'next' cells
 
