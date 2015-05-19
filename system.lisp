@@ -84,7 +84,7 @@ currently being visited."
   (mapc #'start-system *system-classes*))
 
 (defun stop-systems ()
-  (maphash #'(lambda (c s) (stop-system s c)) *systems*)
+  (do-systems (s) (stop-system s))
   (clrhash *systems*))                  ; just in case
 
 (defun restart-systems ()
